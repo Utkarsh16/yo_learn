@@ -1,7 +1,7 @@
-## Folders
+# Folders
 
-# Components
+### Components
 Custom Carousel
 
-# questions.js
+### questions.js
 Interview Questions
