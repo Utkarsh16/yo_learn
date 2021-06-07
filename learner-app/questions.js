@@ -12,124 +12,6 @@ console.log(sumByCallback(sum, 1, 2, 3, 4, 5));
 
 /**
  * ! Question - 2
- * Bind, Call, Apply Polyfill
- */
-// Native
-Function.prototype.mybind = function (context, ...args1) {
-  // safety checks
-  context.func = this;
-  return function (...args2) {
-    return context.func(...args1, ...args2);
-  };
-};
-Function.prototype.myApply = function (context, args = []) {
-  // safety checks
-  context.func = this;
-  context.func(...args);
-};
-Function.prototype.myCall = function (context, ...args) {
-  // safety checks
-  context.func = this;
-  context.func(...args);
-};
-
-// Using Apply
-Function.prototype.mybind = function (context, ...args1) {
-  // safety checks
-  const func = this;
-  return function (...args2) {
-    return func.apply(context, [...args1, ...args2]);
-  };
-};
-
-/**
- * ! Question - 3
- * Bind, Call, Apply Polyfill
- */
-class MyPromise {
-  constructor(callback) {
-    let onResolve,
-      onReject,
-      fullfilled,
-      called,
-      rejected,
-      resolveValue,
-      rejectError;
-
-    function resolve(value) {
-      fullfilled = true;
-      resolveValue = value;
-
-      if (typeof onResolve === "function") {
-        called = true;
-        onResolve(resolveValue);
-      }
-    }
-
-    function reject(error) {
-      rejected = true;
-      rejectError = error;
-
-      if (typeof onReject === "function") {
-        called = true;
-        onReject(rejectError);
-      }
-    }
-
-    this.then = function (thenCallback) {
-      onResolve = thenCallback;
-
-      if (fullfilled && !called) {
-        called = true;
-        onResolve(resolveValue);
-      }
-      return this;
-    };
-
-    this.catch = function (catchCallback) {
-      onReject = catchCallback;
-
-      if (rejected && !called) {
-        called = true;
-        onReject(rejectError);
-      }
-      return this;
-    };
-
-    callback(resolve, reject);
-  }
-}
-
-MyPromise.resolve = (value) =>
-  new MyPromise((resolve, _reject) => resolve(value));
-MyPromise.reject = (reason) =>
-  new MyPromise((_resolve, reject) => reject(reason));
-
-MyPromise.all = (promises) => {
-  let fullfilledPromises = [],
-    result = [];
-  function executor(resolve, reject) {
-    promises.forEach((promise, index) => {
-      promise
-        .then((resolveValue) => {
-          fullfilledPromises.push(promise);
-          result[index] = resolveValue;
-
-          if (fullfilledPromises.length === promises.length) {
-            return resolve(result);
-          }
-        })
-        .catch((err) => {
-          return reject(err);
-        });
-    });
-  }
-
-  return new MyPromise(executor);
-};
-
-/**
- * ! Question - 4
  * Two way binding
  */
 const inputEl = document.getElementById("test_input");
@@ -155,7 +37,7 @@ btnUpdate.addEventListener("click", function () {
 });
 
 /**
- * ! Question - 5
+ * ! Question - 3
  * mul(2)(3)(4)(5)....(n)()
  */
 let value = 1;
@@ -172,7 +54,7 @@ const mul = (a) => {
 };
 
 /**
- * ! Question - 6
+ * ! Question - 4
  * flatten an array
  */
 const arr = [[1], [2, 3], [4], [3, [2, 4]]];
@@ -188,7 +70,7 @@ const flatten = (arr) => {
 };
 
 /**
- * ! Question - 7
+ * ! Question - 5
  * company relationship tree
  */
 const arr = [
@@ -239,7 +121,7 @@ createCompanyTree(obj, ceo, 0);
 parentDiv.innerHTML = chain;
 
 /**
- * ! Question - 8
+ * ! Question - 6
  * Find pair from Array with exact sum
  */
 const arr = [0, -1, 2, -3, 1]; // -3 -1 0 1 2
@@ -259,3 +141,79 @@ const findPair = (arr, sum) => {
 };
 
 console.log(findPair(arr, sum));
+
+/**
+ * ! Question - 7
+ * Generate Binary Numbers from 1 - n (used Queue)
+ */
+const n = 10;
+class Q {
+  constructor() {
+    this.q = [];
+  }
+  enq(value) {
+    this.q.push(value);
+  }
+  dq() {
+    return this.q.shift();
+  }
+}
+
+const q = new Q();
+let result = [];
+q.enq("1");
+for (let index = 1; index <= n; index++) {
+  const first = q.dq();
+  result.push(first);
+  q.enq(`${first}0`);
+  q.enq(`${first}1`);
+}
+console.log(result);
+
+/**
+ * ! Question - 8
+ * Merge overlapping ranges in an array - Stack used!
+ */
+let arr = [
+  [6, 8],
+  [1, 9],
+  [2, 4],
+  [4, 7],
+  [5, 7],
+];
+
+class Stack {
+  constructor() {
+    this.arr = [];
+  }
+  push(value) {
+    this.arr.push(value);
+  }
+  pop() {
+    if (this.arr.length > 0) return this.arr.pop();
+  }
+  top() {
+    if (this.arr.length > 0) return this.arr[this.arr.length - 1];
+  }
+  print() {
+    return JSON.stringify(this.arr);
+  }
+}
+
+const mergeOverlappingRanges = (arr) => {
+  const s = new Stack();
+  s.push(arr[0]);
+  for (let i = 1; i < arr.length; i++) {
+    const range1 = s.top();
+    const range2 = arr[i];
+    if (range1[range1.length - 1] >= range2[0]) {
+      const combined = [...range1, ...range2];
+      s.pop();
+      s.push([Math.min(...combined), Math.max(...combined)]);
+    } else s.push(arr[i]);
+  }
+  return s.print();
+};
+
+const result = mergeOverlappingRanges(arr1.sort());
+console.log(JSON.stringify(result));
