@@ -1,0 +1,5 @@
+export const ZOOM_CONSTANTS = {
+  ZOOM_IN_LIMIT: 1,
+  ZOOM_OUT_LIMIT: 0.5,
+  ZOOM_STEP: 0.1,
+};
